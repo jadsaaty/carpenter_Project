@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My Carpentry Projects</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f6f1ea;--card:#fffdf9;--ink:#2b2118;--mute:#7a6a5a;--line:#e3d8c9;--accent:#8b5a2b;--accent2:#5c3a17;--good:#2f7d4f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1812;--card:#272018;--ink:#f1e8dc;--mute:#a89886;--line:#3b3126;--accent:#d19a5c;--accent2:#e8b97f;--good:#5fbf86}}
+:root[data-theme="dark"]{--bg:#1d1812;--card:#272018;--ink:#f1e8dc;--mute:#a89886;--line:#3b3126;--accent:#d19a5c;--accent2:#e8b97f;--good:#5fbf86}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.45}
+main{max-width:760px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.6rem;margin:0 0 4px;color:var(--accent2)}
+.sub{color:var(--mute);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+label{display:block;font-size:.85rem;color:var(--mute);margin:10px 0 4px}
+input,textarea,select{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);font:inherit}
+textarea{min-height:70px;resize:vertical}
+.row{display:flex;gap:10px}.row>div{flex:1}
+button{font:inherit;cursor:pointer;border-radius:9px;border:1px solid var(--accent);background:var(--accent);color:#fff;padding:10px 16px}
+button.ghost{background:transparent;color:var(--accent2)}
+button.small{padding:5px 10px;font-size:.85rem}
+.top{display:flex;justify-content:space-between;align-items:end;gap:10px;flex-wrap:wrap}
+.top select{width:auto}
+.mode{display:flex;gap:14px;margin:10px 0 4px;flex-wrap:wrap}
+.mode label{display:flex;align-items:center;gap:6px;margin:0;color:var(--ink)}
+.mode input{width:auto}
+.bar{height:12px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .25s}
+.bar.done>i{background:var(--good)}
+.money{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.money div{background:var(--bg);border-radius:9px;padding:8px;text-align:center}
+.money small{display:block;color:var(--mute);font-size:.75rem}
+.money b{font-size:1rem}
+.profit b{color:var(--good)}
+h3{margin:0 0 4px}
+.chk{display:flex;align-items:center;gap:8px;margin:0 0 8px;color:var(--good);font-weight:600;font-size:.9rem}
+.chk input{width:18px;height:18px;accent-color:var(--good)}
+.card.isdone{border-color:var(--good);opacity:.8}
+.card.isdone h3{text-decoration:line-through}
+.meta{font-size:.95rem;margin:2px 0}
+.desc{color:var(--mute);margin:0 0 6px;white-space:pre-wrap}
+.steps label{display:flex;gap:8px;align-items:center;color:var(--ink);margin:6px 0;font-size:1rem}
+.steps input{width:auto}
+.actions{display:flex;gap:8px;margin-top:10px}
+.tot{display:flex;justify-content:space-between;color:var(--mute);margin-bottom:10px;font-size:.95rem}
+.empty{text-align:center;color:var(--mute);padding:24px}
+.hint{font-size:.8rem;color:var(--mute);margin-top:4px}
+</style>
+</head>
+<body>
+<main>
+<div class="top">
+  <div><h1>🪚 My Projects</h1><p class="sub" style="margin:0">Track cost, profit and progress for every job.</p></div>
+  <select id="cur" aria-label="Currency"><option>$</option><option>L.L.</option><option>€</option></select>
+</div>
+
+<form class="card" id="f" onsubmit="return false" style="margin-top:16px">
+  <b id="ftitle">New project</b>
+  <label for="t">Project title</label>
+  <input id="t" placeholder="e.g. Kitchen cabinets – Mr. Karam">
+  <label for="cu">Customer name</label>
+  <input id="cu" placeholder="e.g. Mr. Karam">
+  <label for="d">Description</label>
+  <textarea id="d" placeholder="What needs to be built, materials, deadline…"></textarea>
+  <label for="me">Measurements / size</label>
+  <input id="me" placeholder="e.g. 240 x 60 x 90 cm">
+  <div class="hint">Write it any way you like: length x width x height, per piece, etc.</div>
+  <div class="row">
+    <div><label for="c">Cost price</label><input id="c" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></div>
+    <div><label for="p">Profit</label><input id="p" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></div>
+  </div>
+  <div class="mode">
+    <label><input type="radio" name="m" value="pct" checked> Progress in %</label>
+    <label><input type="radio" name="m" value="steps"> Custom steps (optional)</label>
+  </div>
+  <div id="pctBox"><label for="pg">Progress: <span id="pgv">0</span>%</label><input id="pg" type="range" min="0" max="100" step="5" value="0"></div>
+  <div id="stepBox" hidden><label for="s">Your steps, one per line</label>
+    <textarea id="s" placeholder="Measure&#10;Buy wood&#10;Cut&#10;Assemble&#10;Paint&#10;Deliver"></textarea>
+    <div class="hint">Tick steps off later — the percentage is calculated for you.</div></div>
+  <div class="actions"><button id="save">Add project</button><button type="button" class="ghost" id="cancel" hidden>Cancel</button></div>
+</form>
+
+<div class="tot" id="tot"></div>
+<div id="list"></div>
+</main>
+
+<script>
+(function(){
+var KEY="carpenter-projects-v1",$=function(i){return document.getElementById(i)};
+var S={cur:"$",items:[]},editId=null;
+try{var r=localStorage.getItem(KEY);if(r){var o=JSON.parse(r);if(o&&Array.isArray(o.items))S=o}}catch(e){}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function fmt(n){return S.cur+" "+(Math.round(n*100)/100).toLocaleString()}
+function pct(p){if(p.mode==="steps"){var n=p.steps.length;return n?Math.round(p.steps.filter(function(s){return s.done}).length/n*100):0}return p.pct}
+function mode(){return document.querySelector('input[name=m]:checked').value}
+function toggleMode(){var s=mode()==="steps";$("pctBox").hidden=s;$("stepBox").hidden=!s}
+document.querySelectorAll('input[name=m]').forEach(function(x){x.onchange=toggleMode});
+$("pg").oninput=function(){$("pgv").textContent=this.value};
+$("cur").value=S.cur;$("cur").onchange=function(){S.cur=this.value;persist();render()};
+
+function reset(){editId=null;$("t").value=$("d").value=$("c").value=$("p").value=$("s").value=$("cu").value=$("me").value="";$("pg").value=0;$("pgv").textContent=0;
+ document.querySelector('input[name=m][value=pct]').checked=true;toggleMode();$("save").textContent="Add project";$("ftitle").textContent="New project";$("cancel").hidden=true}
+$("cancel").onclick=reset;
+
+$("save").onclick=function(){
+ var t=$("t").value.trim();if(!t){$("t").focus();return}
+ var old=S.items.find(function(x){return x.id===editId});
+ var p={id:editId||Date.now(),done:old?!!old.done:false,title:t,customer:$("cu").value.trim(),meas:$("me").value.trim(),desc:$("d").value.trim(),cost:+$("c").value||0,profit:+$("p").value||0,mode:mode(),pct:+$("pg").value,steps:[]};
+ if(p.mode==="steps"){
+  var lines=$("s").value.split("\n").map(function(l){return l.trim()}).filter(Boolean);
+  p.steps=lines.map(function(l){var m=old&&old.steps.find(function(s){return s.text===l});return{text:l,done:m?m.done:false}});
+  if(!p.steps.length)p.mode="pct";
+ }
+ if(old)S.items[S.items.indexOf(old)]=p;else S.items.unshift(p);
+ persist();reset();render();
+};
+
+function render(){
+ var tc=0,tp=0;
+ $("list").innerHTML=S.items.length?S.items.map(function(p){
+  tc+=p.cost;tp+=p.profit;var g=pct(p);
+  var steps=p.mode==="steps"?'<div class="steps">'+p.steps.map(function(s,i){return'<label><input type="checkbox" data-id="'+p.id+'" data-i="'+i+'"'+(s.done?" checked":"")+'> '+esc(s.text)+'</label>'}).join("")+'</div>':
+   '<input type="range" min="0" max="100" step="5" value="'+p.pct+'" data-slide="'+p.id+'" aria-label="Progress">';
+  return'<div class="card'+(p.done?' isdone':'')+'"><label class="chk"><input type="checkbox" data-done="'+p.id+'"'+(p.done?' checked':'')+'> Project completed</label><h3>'+esc(p.title)+'</h3>'+(p.customer?'<div class="meta">👤 '+esc(p.customer)+'</div>':'')+(p.meas?'<div class="meta">📐 '+esc(p.meas)+'</div>':'')+(p.desc?'<p class="desc">'+esc(p.desc)+'</p>':'')+
+  '<div class="money"><div><small>Cost</small><b>'+fmt(p.cost)+'</b></div><div class="profit"><small>Profit</small><b>'+fmt(p.profit)+'</b></div><div><small>Client pays</small><b>'+fmt(p.cost+p.profit)+'</b></div></div>'+
+  '<div><b>'+g+'%</b> '+(g>=100?"✅ Done":"complete")+'</div><div class="bar'+(g>=100?" done":"")+'"><i style="width:'+g+'%"></i></div>'+steps+
+  '<div class="actions"><button class="small ghost" data-edit="'+p.id+'">Edit</button><button class="small ghost" data-del="'+p.id+'">Delete</button></div></div>'
+ }).join(""):'<div class="empty">No projects yet — add your first one above.</div>';
+ $("tot").innerHTML=S.items.length?'<span>'+S.items.length+' project(s)</span><span>Total profit: <b>'+fmt(tp)+'</b></span>':"";
+}
+
+$("list").addEventListener("change",function(e){var t=e.target;
+ if(t.dataset.done){var q=S.items.find(function(x){return x.id==t.dataset.done});q.done=t.checked;persist();render();return}
+ if(t.dataset.i!==undefined){var p=S.items.find(function(x){return x.id==t.dataset.id});p.steps[t.dataset.i].done=t.checked;persist();render()}});
+$("list").addEventListener("input",function(e){var t=e.target;
+ if(t.dataset.slide){var p=S.items.find(function(x){return x.id==t.dataset.slide});p.pct=+t.value;persist();
+  var c=t.closest(".card");c.querySelector(".bar>i").style.width=p.pct+"%";c.querySelector("b:not(.money b)").textContent=p.pct+"%"}});
+$("list").addEventListener("click",function(e){var t=e.target;
+ if(t.dataset.del){if(confirm("Delete this project?")){S.items=S.items.filter(function(x){return x.id!=t.dataset.del});persist();render()}}
+ if(t.dataset.edit){var p=S.items.find(function(x){return x.id==t.dataset.edit});editId=p.id;
+  $("t").value=p.title;$("cu").value=p.customer||"";$("me").value=p.meas||"";$("d").value=p.desc;$("c").value=p.cost||"";$("p").value=p.profit||"";$("pg").value=p.pct;$("pgv").textContent=p.pct;
+  $("s").value=p.steps.map(function(s){return s.text}).join("\n");
+  document.querySelector('input[name=m][value='+p.mode+']').checked=true;toggleMode();
+  $("save").textContent="Save changes";$("ftitle").textContent="Edit project";$("cancel").hidden=false;window.scrollTo({top:0,behavior:"smooth"})}});
+render();
+})();
+</script>
+</body>
+</html>
